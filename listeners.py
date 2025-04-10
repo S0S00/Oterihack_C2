@@ -40,7 +40,7 @@ class Listener():
         def decode_this(encrypted_data: bytes, agents_name :str) -> bytes:
             iv_list = [13, 77, 137, 47, 126, 97, 75, 99, 145, 34, 62, 202, 134, 23, 94, 58]
             with open("data/listeners/" + self.id + "/agents/" + agents_name + "/secret", "r") as f:
-                key = f.read().strip()  # ← important : supprime les \n potentiels
+                key = f.read().strip() 
 
             iv = bytes(iv_list)
             key_bytes = hashlib.sha256(key.encode()).digest()
@@ -124,7 +124,7 @@ class Listener():
             original_path = flask.request.form.get("path")
 
             if not encoded_file or not original_path or not name:
-                return ", 500
+                return "", 500
 
             name_file = os.path.basename(original_path)
 
