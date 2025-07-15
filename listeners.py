@@ -22,8 +22,8 @@ class Listener():
         self.id   = name
         self.Path = "data/listeners/{}/".format(self.id)
         self.agentsPath = "{}agents/".format(self.Path)
-        self.agentsPath_download_files = "/home/kali/Desktop/C2_download/"
-        self.agentsPath_upload_files = "/home/kali/Desktop/C2_uploads/"
+        self.agentsPath_download_files = "/home/so/Bureau/C2_download/"
+        self.agentsPath_upload_files = "/home/so/Bureau/C2_uploads/"
         
         
         self.app = flask.Flask(__name__)
