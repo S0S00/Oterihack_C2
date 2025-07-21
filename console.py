@@ -25,11 +25,11 @@ if not os.path.exists("./C2_download"):
     else:
         util.info("Okay but this will most likely fail")
 
-if not os.path.exists("./opt/C2_uploads"):
+if not os.path.exists("./C2_uploads"):
     util.info("Upload Folder not found, should we create it ?")
     ans = input("[Y/n] ?")
     if ans != "n":
-        os.mkdir("./opt/C2_uploads")
+        os.mkdir("./C2_uploads")
         util.success("Done")
     else:
         util.info("Okay but this will most likely fail")
