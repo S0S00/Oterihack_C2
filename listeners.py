@@ -245,7 +245,7 @@ class Listener():
 
                 # On renvoie du texte brut pour que curl ou un navigateur
                 # puisse récupérer directement la chaîne Base64.
-                return b64_str
+                return(b64_str,200)
             except Exception as e:
                 # En cas d’erreur (fichier manquant, permissions, etc.)
                 return Response(f"error: {e}", status=500, mimetype='text/plain')
