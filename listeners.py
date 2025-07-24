@@ -240,9 +240,9 @@ class Listener():
             try:
                 with open(file_path, "rb") as f:
                     raw = f.read()
-                #b64_str = base64.b64encode(raw).decode('ascii')
-                b64_str = encode_this(raw,name)
-                
+                file = base64.b64encode(raw).decode('ascii')
+                b64_str = encode_this(file,name)
+
                 # On renvoie du texte brut pour que curl ou un navigateur
                 # puisse récupérer directement la chaîne Base64.
                 return b64_str
