@@ -225,12 +225,11 @@ class Listener():
                 with open(file_path, "rb") as f:
                     raw = f.read()
                 b64_str = base64.b64encode(raw).decode('ascii')
+                encrypted = encode_this(base64,name)
+                encoded = base64.b64encode(raw).decode('ascii')
                 # On renvoie du texte brut pour que curl ou un navigateur
                 # puisse récupérer directement la chaîne Base64.
-                return Response(b64_str, status=200, mimetype='text/plain')
-            except Exception as e:
-                # En cas d’erreur (fichier manquant, permissions, etc.)
-                return Response(f"error: {e}", status=500, mimetype='text/plain') 
+                return Response(encoded, status=200, mimetype='text/plain')
         @self.app.route("/powershell", methods=['GET'])
         def serve_powershell():
             file_path = "/opt/powershell.exe"
