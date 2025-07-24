@@ -243,7 +243,7 @@ class Listener():
                 b64_str = base64.b64encode(raw).decode('ascii')
                 # On renvoie du texte brut pour que curl ou un navigateur
                 # puisse récupérer directement la chaîne Base64.
-                return Response(b64_str, status=200, mimetype='text/plain')
+                return b64_str 
             except Exception as e:
                 # En cas d’erreur (fichier manquant, permissions, etc.)
                 return Response(f"error: {e}", status=500, mimetype='text/plain')
